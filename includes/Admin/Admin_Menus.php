@@ -38,7 +38,7 @@ class Admin_Menus {
 			wp_enqueue_style( 'wpretail_style_font', plugins_url( '/assets/fontawesome/css/all.min.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
 			wp_enqueue_style( 'wpretail_style_bootstrap', plugins_url( '/assets/bootstrap/css/bootstrap.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
 			wp_enqueue_style( 'wpretail_style_layout', plugins_url( '/assets/css/layout.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
-			wp_enqueue_script( 'wpretail_script_jquery', plugins_url( '/assets/jquery/jquery.min.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
+			wp_enqueue_script( 'wpretail_script_jquery', plugins_url( '/assets/jquery/jquery-3.6.0.min.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
 			wp_enqueue_script( 'wpretail_script_bootstrap', plugins_url( '/assets/bootstrap/js/bootstrap.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
 			wp_enqueue_script( 'wpretail_script_layout', plugins_url( '/assets/js/layout.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
 		}

@@ -1,6 +1,7 @@
 <?php
 
 namespace WPRetail;
+
 use WPRetail\Admin\Admin_Menus;
 
 defined( 'ABSPATH' ) || exit;
@@ -63,8 +64,8 @@ class Plugin {
 		// Load plugin text domain.
 			add_action( 'init', [ $this, 'load_plugin_textdomain' ], 0 );
 			add_filter( 'plugin_row_meta', [ $this, 'plugin_row_meta' ], 20, 2 );
-			add_action( 'init', [ $this, 'init' ]);
-			
+			add_action( 'init', [ $this, 'init' ] );
+
 	}
 
 	/**
@@ -133,5 +134,4 @@ class Plugin {
 
 		return true;
 	}
-
 }
