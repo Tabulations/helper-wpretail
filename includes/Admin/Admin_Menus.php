@@ -31,11 +31,14 @@ class Admin_Menus {
 	 */
 	public function init() {
 		if ( isset( $_GET['page'] ) && 'wpretail' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			wp_enqueue_style( 'wpretail_style_font', plugins_url( '/assets/fontawesome/css/all.min.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
-			wp_enqueue_style( 'wpretail_style_bootstrap', plugins_url( '/assets/bootstrap/css/bootstrap.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
+			wp_enqueue_style( 'wpretail_style_font', plugins_url( '/assets/boostrap/fontawesome-free/css/all.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
+			wp_enqueue_style( 'wpretail_style_bootstrap', plugins_url( '/assets/boostrap/css/bootstrap.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
+			wp_enqueue_style( 'wpretail_style_menu', plugins_url( '/assets/boostrap/css/menu.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
 			wp_enqueue_style( 'wpretail_style_layout', plugins_url( '/assets/css/layout.css', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION );
-			wp_enqueue_script( 'wpretail_script_jquery', plugins_url( '/assets/jquery/jquery-3.6.0.min.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
-			wp_enqueue_script( 'wpretail_script_bootstrap', plugins_url( '/assets/bootstrap/js/bootstrap.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
+			wp_enqueue_script( 'wpretail_script_jquery', plugins_url( '/assets/boostrap/js/jquery-3.6.0.min.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
+			wp_enqueue_script( 'wpretail_script_bootstrap', plugins_url( '/assets/boostrap/js/bootstrap.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
+			// wp_enqueue_script( 'wpretail_script_menu', plugins_url( '/assets/boostrap/js/menu.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
+			wp_enqueue_script( 'wpretail_script_jquery_easing', plugins_url( '/assets/boostrap/js/jquery.easing.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
 			wp_enqueue_script( 'wpretail_script_layout', plugins_url( '/assets/js/layout.js', WPRETAIL_PLUGIN_FILE ), [], WPRETAIL_VERSION, true );
 		}
 	}

@@ -1,191 +1,123 @@
 <!-- Page Wrapper -->
 <div id="wpretail-wrapper">
 
-	<!-- Sidebar -->
-	<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
+<!-- Sidebar -->
+<ul class="nav navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-		<!-- Sidebar - Brand -->
-		<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-			<div class="sidebar-brand-icon rotate-n-15">
-				<img src="https://i.pinimg.com/564x/15/bb/55/15bb559cdd28f56d7c17b00498b4a946.jpg" alt="" height="30px" class="rounded-circle">
-				<!-- <i class="fas fa-laugh-wink"></i> -->
-			</div>
-			<div class="sidebar-brand-text mx-3"><?php echo esc_html__( 'WPRetail', 'wpretail' ); ?><sup><?php echo esc_html( WPRETAIL_VERSION ); ?></sup></div>
-		</a>
+<!-- Sidebar - Brand -->
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+	<div class="sidebar-brand-icon rotate-n-15">
+		<i class="fas fa-laugh-wink"></i>
+	</div>
+	<div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+</a>
 
-		<!-- Divider -->
-		<hr class="sidebar-divider my-0">
+<!-- Divider -->
+<hr class="sidebar-divider my-0">
 
-		<!-- Nav Item - Dashboard -->
-		<li class="nav-item active">
-			<a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail' ) ); ?>">
-				<i class="fas fa-fw fa-tachometer-alt"></i>
-				<span>Dashboard</span></a>
-		</li>
+<!-- Nav Item - Dashboard -->
+<li class="nav-item active">
+	<a class="nav-link" href="index.html">
+		<i class="fas fa-fw fa-tachometer-alt"></i>
+		<span>Dashboard</span></a>
+</li>
 
-		<!-- Divider -->
-		<hr class="sidebar-divider">
+<!-- Divider -->
+<hr class="sidebar-divider">
 
-		<!-- Heading -->
-		<div class="sidebar-heading">
-			Products
+<!-- Heading -->
+<div class="sidebar-heading">
+	Interface
+</div>
+
+<!-- Nav Item - Pages Collapse Menu -->
+<li class="nav-item">
+	<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+	   aria-expanded="true" aria-controls="collapseTwo">
+		<i class="fas fa-fw fa-cog"></i>
+		<span>Components</span>
+	</a>
+	<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionSidebar">
+		<div class="bg-white py-2 collapse-inner rounded">
+			<h6 class="collapse-header">Custom Components:</h6>
+			<a class="collapse-item" href="buttons.html">Buttons</a>
+			<a class="collapse-item" href="cards.html">Cards</a>
 		</div>
+	</div>
+</li>
 
-		<!-- Nav Item - Pages Collapse Menu -->
-		<li class="nav-item">
-			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
-				aria-expanded="true" aria-controls="collapseUsers">
-				<i class="fas fa-fw fa-cog"></i>
-				<span>Users</span>
-			</a>
-			<div id="collapseUsers" class="collapse" aria-labelledby="collapseUsers" data-parent="#accordionSidebar">
-				<div class="d-flex flex-column px-4 py-2 collapse-inner rounded">
-					<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=role_management' ) ); ?>">Role Management</a>
-				</div>
-			</div>
-		</li>
-
-		<!-- Nav Item - Utilities Collapse Menu -->
-		<li class="nav-item">
-			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProducts"
-				aria-expanded="true" aria-controls="collapseProducts">
-				<i class="fas fa-fw fa-wrench"></i>
-				<span>Products</span>
-			</a>
-			<div id="collapseProducts" class="collapse" aria-labelledby="headingUtilities"
-				data-parent="#accordionSidebar">
-				<div class="d-flex flex-column px-4 py-2 collapse-inner rounded">
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=list_products' ) ); ?>">List Products</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=add_product' ) ); ?>">Add Product</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=print_labels' ) ); ?>">Print Labels</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=variations' ) ); ?>">Variations</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=import_products' ) ); ?>">Import Products</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=import_opening_stocks' ) ); ?>">Import Opening Stock</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=selling_price_group' ) ); ?>">Selling Price Group</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=units' ) ); ?>">Units</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=categories' ) ); ?>">Categories</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=brands' ) ); ?>">Brands</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=products&sub_menu=warranties' ) ); ?>">Warranties</a>
-				</div>
-			</div>
-		</li>
-
-
-		<!-- Divider -->
-		<hr class="sidebar-divider">
-
-		<!-- Heading -->
-		<div class="sidebar-heading">
-			Sales
+<!-- Nav Item - Utilities Collapse Menu -->
+<li class="nav-item">
+	<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUtilities"
+	   aria-expanded="true" aria-controls="collapseUtilities">
+		<i class="fas fa-fw fa-wrench"></i>
+		<span>Utilities</span>
+	</a>
+	<div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+		 data-bs-parent="#accordionSidebar">
+		<div class="bg-white py-2 collapse-inner rounded">
+			<h6 class="collapse-header">Custom Utilities:</h6>
+			<a class="collapse-item" href="utilities-color.html">Colors</a>
+			<a class="collapse-item" href="utilities-border.html">Borders</a>
+			<a class="collapse-item" href="utilities-animation.html">Animations</a>
+			<a class="collapse-item" href="utilities-other.html">Other</a>
 		</div>
+	</div>
+</li>
 
-		<!-- Nav Item - Pages Collapse Menu -->
-		<li class="nav-item">
-			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSales"
-				aria-expanded="true" aria-controls="collapseSales">
-				<i class="fas fa-fw fa-cog"></i>
-				<span>Sales</span>
-			</a>
-			<div id="collapseSales" class="collapse" aria-labelledby="collapseSales" data-parent="#accordionSidebar">
-			<div class="d-flex flex-column px-4 py-2 collapse-inner rounded">
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=all_sales' ) ); ?>">All Sales</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=add_sales' ) ); ?>">Add Sales</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=list_pos' ) ); ?>">List POS</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=pos' ) ); ?>">POS</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=add_draft' ) ); ?>">Add Draft</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=list_drafts' ) ); ?>">List Drafts</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=add_quotation' ) ); ?>">Add Quotation</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=list_quotations' ) ); ?>">List Quotations</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=list_sell_return' ) ); ?>">List Sell Return</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=shipments' ) ); ?>">Shipments</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=discounts' ) ); ?>">Discounts</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=sales&sub_menu=import_sales' ) ); ?>">Import Sales</a>
-			</div>
-		</li>
+<!-- Divider -->
+<hr class="sidebar-divider">
 
-		<!-- Nav Item - Utilities Collapse Menu -->
-		<li class="nav-item">
-			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReport"
-				aria-expanded="true" aria-controls="collapseReport">
-				<i class="fas fa-fw fa-wrench"></i>
-				<span>Reports</span>
-			</a>
-			<div id="collapseReport" class="collapse" aria-labelledby="collapseReport"
-				data-parent="#accordionSidebar">
-				<div class="d-flex flex-column px-4 py-2 collapse-inner rounded">
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=reports&sub_menu=sales_report' ) ); ?>">Sales Report</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=reports&sub_menu=register_report' ) ); ?>">Register Report</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=reports&sub_menu=trending_products' ) ); ?>">Trending Products</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=reports&sub_menu=tax_report' ) ); ?>">Tax Report</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=reports&sub_menu=activity_log' ) ); ?>">Activity Log</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=reports&sub_menu=email_notification' ) ); ?>">Email Notification</a>
-				</div>
-			</div>
-		</li>
+<!-- Heading -->
+<div class="sidebar-heading">
+	Addons
+</div>
 
-		<!-- Divider -->
-		<hr class="sidebar-divider">
-
-		<!-- Heading -->
-		<div class="sidebar-heading">
-			Setting
+<!-- Nav Item - Pages Collapse Menu -->
+<li class="nav-item">
+	<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"
+	   aria-expanded="true" aria-controls="collapsePages">
+		<i class="fas fa-fw fa-folder"></i>
+		<span>Pages</span>
+	</a>
+	<div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-bs-parent="#accordionSidebar">
+		<div class="bg-white py-2 collapse-inner rounded">
+			<h6 class="collapse-header">Login Screens:</h6>
+			<a class="collapse-item" href="login.html">Login</a>
+			<a class="collapse-item" href="register.html">Register</a>
+			<a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+			<div class="collapse-divider"></div>
+			<h6 class="collapse-header">Other Pages:</h6>
+			<a class="collapse-item" href="404.html">404 Page</a>
+			<a class="collapse-item" href="blank.html">Blank Page</a>
 		</div>
+	</div>
+</li>
 
-		<!-- Nav Item - Pages Collapse Menu -->
-		<li class="nav-item">
-			<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSetting"
-				aria-expanded="true" aria-controls="collapseSetting">
-				<i class="fas fa-fw fa-folder"></i>
-				<span>Settings</span>
-			</a>
-			<div id="collapseSetting" class="collapse" aria-labelledby="headingSettings" data-parent="#accordionSidebar">
-			<div class="d-flex flex-column px-4 py-2 collapse-inner rounded">
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=business' ) ); ?>">Business</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=tax' ) ); ?>">Tax</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=product' ) ); ?>">Product</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=sales' ) ); ?>">Sales</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=dashboard' ) ); ?>">Dashboard</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=theme' ) ); ?>">Theme</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=prefix' ) ); ?>">Prefix</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=email' ) ); ?>">Email</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=invoice' ) ); ?>">Invoice</a>
-				<a class="collapse-item" href="<?php echo esc_url( admin_url( 'admin.php?page=wpretail&menu=settings&sub_menu=printer' ) ); ?>">Printer</a>
-				</div>
-			</div>
-		</li>
+<!-- Nav Item - Charts -->
+<li class="nav-item">
+	<a class="nav-link" href="charts.html">
+		<i class="fas fa-fw fa-chart-area"></i>
+		<span>Charts</span></a>
+</li>
 
-		<!-- Nav Item - Charts -->
-		<li class="nav-item">
-			<a class="nav-link" href="charts.html">
-				<i class="fas fa-fw fa-chart-area"></i>
-				<span>Charts</span></a>
-		</li>
+<!-- Nav Item - Tables -->
+<li class="nav-item">
+	<a class="nav-link" href="tables.html">
+		<i class="fas fa-fw fa-table"></i>
+		<span>Tables</span></a>
+</li>
 
-		<!-- Nav Item - Tables -->
-		<li class="nav-item">
-			<a class="nav-link" href="tables.html">
-				<i class="fas fa-fw fa-table"></i>
-				<span>Tables</span></a>
-		</li>
+<!-- Divider -->
+<hr class="sidebar-divider d-none d-md-block">
 
-		<!-- Divider -->
-		<hr class="sidebar-divider">
+<!-- Sidebar Toggler (Sidebar) -->
+<div class="text-center d-none d-md-inline">
+	<button class="rounded-circle border-0" id="sidebarToggle"></button>
+</div>
 
-		<!-- Heading -->
-		<div class="sidebar-heading">
-			Settings
-		</div>
-
-		<!-- Divider -->
-		<hr class="sidebar-divider d-none d-md-block">
-
-		<!-- Sidebar Toggler (Sidebar) -->
-		<div class="text-center d-none d-md-inline">
-			<button class="rounded-circle border-0" id="sidebarToggle"></button>
-		</div>
-
-	</ul>
-	<!-- End of Sidebar -->
+</ul>
+<!-- End of Sidebar -->
 
 	<!-- Content Wrapper -->
 	<div id="content-wrapper" class="d-flex flex-column">
@@ -221,7 +153,7 @@
 					<!-- Nav Item - Search Dropdown (Visible Only XS) -->
 					<li class="nav-item dropdown no-arrow d-sm-none">
 						<a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<i class="fas fa-search fa-fw"></i>
 						</a>
 						<!-- Dropdown - Messages -->
@@ -245,7 +177,7 @@
 					<!-- Nav Item - Alerts -->
 					<li class="nav-item dropdown no-arrow mx-1">
 						<a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<i class="fas fa-bell fa-fw"></i>
 							<!-- Counter - Alerts -->
 							<span class="badge badge-danger badge-counter">3+</span>
@@ -296,7 +228,7 @@
 					<!-- Nav Item - Messages -->
 					<li class="nav-item dropdown no-arrow mx-1">
 						<a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<i class="fas fa-envelope fa-fw"></i>
 							<!-- Counter - Messages -->
 							<span class="badge badge-danger badge-counter">7</span>
@@ -364,7 +296,7 @@
 					<!-- Nav Item - User Information -->
 					<li class="nav-item dropdown no-arrow">
 						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
 							<!-- <img class="img-profile rounded-circle"
 								src="img/undraw_profile.svg"> -->
@@ -385,7 +317,7 @@
 								Activity Log
 							</a>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+							<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
 								<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
 								Logout
 							</a>
