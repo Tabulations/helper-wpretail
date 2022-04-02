@@ -22,18 +22,19 @@
 					<div class="col-md-12">
 					<div class="tab-content">
                         <div class="tab-pane active" id="addproduct" role="tabpanel">
+							<form method="POST" id="wp-retail-add-product" enctype="multipart/form-data" class="wp-retail-add-product">
 							<div class="container">
 								<div class="row">
 									<div class="col-md-4">
 										<div class="mb-3">
 											<label for="name" class="form-label">Product Name:*</label>
-											<input type="text" class="form-control" id="name" placeholder="Product Name" aria-required="true">
+											<input type="text" class="form-control" id="product_name" name="product_name" placeholder="Product Name" aria-required="true">
 										</div>
 									</div>
 									<div class="col-md-4">
 										<div class="mb-3">
 											<label for="sku" class="form-label">SKU:*</label>
-											<input type="text" class="form-control" id="sku" placeholder="SKU" aria-required="true">
+											<input type="text" class="form-control" id="product_sku" name="product_sku" placeholder="SKU" aria-required="true">
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -46,7 +47,7 @@
 											</select>
 										</div>
 									</div>
-									<div class="col-md-4">
+									<!-- <div class="col-md-4">
 										<div class="mb-3">
 											<label for="brand_id"  class="form-label">Units Type:*</label>
 											<select class="form-select" name="unit_id" id="unit_id" aria-required="true">
@@ -56,7 +57,7 @@
 												<option value="3">Grams</option>
 											</select>
 										</div>
-									</div>
+									</div> -->
 									<div class="col-md-4">
 										<div class="mb-3">
 											<label for="brand_id"  class="form-label">Brand :*</label>
@@ -102,7 +103,16 @@
 										</div>
 									</div>
 								</div>
+								<div class="row">
+								<div class="col-md-3">
+									<div class="mb-3">
+									<button type="submit" id="add-Product" class="wp-retail-add-product-button">Add Product</button>
+									</div>
+									</div>
+								</div>
 							</div>
+							</form>
+
                         </div>
 						<div class="tab-pane" id="listproduct" role="tabpanel" >
                            List Product
