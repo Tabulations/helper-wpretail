@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Sales Handler class.
  */
-class WPRetail_install {
+class WPRetail_Install {
 
 		/**
 		 * DB updates and callbacks that need to be run per version.
@@ -64,7 +64,7 @@ class WPRetail_install {
 	 */
 	private static $background_updater;
 
-	public function init() {
+	public static function init() {
 		add_action( 'init', [ __CLASS__, 'check_version' ], 5 );
 		add_action( 'admin_init', [ __CLASS__, 'install_actions' ] );
 		dd_filter( 'plugin_action_links_' . WPRETAIL_PLUGIN_BASENAME, [ __CLASS__, 'plugin_action_links' ] );
@@ -144,6 +144,7 @@ class WPRetail_install {
 		self::remove_admin_notices();
 		self::create_options();
 		self::create_tables();
+		self::create_files();
 
 		delete_transient( 'wpretail_installing' );
 
@@ -279,7 +280,7 @@ class WPRetail_install {
 	}
 
 	private function create_options() {
-		@todo Something
+
 	}
 
 		/**
@@ -312,49 +313,104 @@ class WPRetail_install {
 		if ( $wpdb->has_cap( 'collation' ) ) {
 			$charset_collate = $wpdb->get_charset_collate();
 		}
-
 		$tables = "
-	CREATE TABLE {$wpdb->prefix}business (
-		id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-		name text NOT NULL,
-		currency_id BIGINT UNSIGNED NOT NULL,
-		start_date NULL,
-		tax_number_1 VARCHAR(100) NOT NULL ,
-		tax_label_1 VARCHAR(10) NOT NULL,
-		tax_number_1 VARCHAR(100) NULL ,
-		tax_label_1 VARCHAR(10) NULL,
-		default_profit_percent FLOAT(5,2) DEFAULT '0',
-		owner_id BIGINT UNSIGNED,
-		FOREIGN_KEY(owner_id) REFERENCES users(id)  ON DELETE CASCADE,
-		time_zone text DEFAULT 'Asia/Kathmandu',
-		fiscal_year_start_month TINYINT DEFAULT '1',
-		accounting_method ENUM('fifo','lifo','avco') DEFAULT 'fifo',
-		default_sale_discount DECIMAL(5,2) NULL,
-		sell_price_tax ENUM('includes','excludes') DEFAULT 'includes';
-		FOREIGN_KEY(currency_id) REFERENCES currencies(id);
-		logo text NULL,
-		sku_prefix text NULL,
-		enable_tooltip BOOLEAN DEFAULT '1',
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
-		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-	) $charset_collate;
-	CREATE TABLE {$wpdb->prefix}business_location(
-		id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-		business_id BIGINT UNSIGNED NOT NULL,
-		FOREIGN_KEY('business_id') REFERENCES business(id) ON DELETE CASCADE,
-		name VARCHAR(256) NOT NULL,
-		landmark text NULL,
-		country VARCHAR(100) NOT NULL,
-		state VARCHAR(100) NOT NULL,
-		city VARCHAR(100) NOT NULL,
-		zip_code VARCHAR NOT NULL,
-		mobile VARCHAR NUll,
-		alternate_number VARCHAR(10) NUll,
-		email VARCHAR NUll,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
-		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-	) $charset_collate;
-";
+			CREATE TABLE {$wpdb->prefix}business (
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				name text NOT NULL,
+				currency_id BIGINT UNSIGNED NOT NULL,
+				start_date NULL,
+				tax_number_1 VARCHAR(100) NOT NULL ,
+				tax_label_1 VARCHAR(10) NOT NULL,
+				tax_number_1 VARCHAR(100) NULL ,
+				tax_label_1 VARCHAR(10) NULL,
+				default_profit_percent FLOAT(5,2) DEFAULT '0',
+				owner_id BIGINT UNSIGNED,
+				FOREIGN_KEY(owner_id) REFERENCES users(id)  ON DELETE CASCADE,
+				time_zone text DEFAULT 'Asia/Kathmandu',
+				fiscal_year_start_month TINYINT DEFAULT '1',
+				accounting_method ENUM('fifo','lifo','avco') DEFAULT 'fifo',
+				default_sale_discount DECIMAL(5,2) NULL,
+				sell_price_tax ENUM('includes','excludes') DEFAULT 'includes';
+				FOREIGN_KEY(currency_id) REFERENCES currencies(id);
+				logo text NULL,
+				sku_prefix text NULL,
+				enable_tooltip BOOLEAN DEFAULT '1',
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+			) $charset_collate;
+			CREATE TABLE {$wpdb->prefix}business_location(
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				business_id BIGINT UNSIGNED NOT NULL,
+				FOREIGN_KEY('business_id') REFERENCES business(id) ON DELETE CASCADE,
+				name VARCHAR(256) NOT NULL,
+				landmark text NULL,
+				country VARCHAR(100) NOT NULL,
+				state VARCHAR(100) NOT NULL,
+				city VARCHAR(100) NOT NULL,
+				zip_code VARCHAR(256) NOT NULL,
+				mobile VARCHAR(256) NUll,
+				alternate_number VARCHAR(10) NUll,
+				email VARCHAR(256) NUll,
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+			) $charset_collate;
+			CREATE TABLE {$wpdb->prefix}products(
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				name VARCHAR(256),
+				business_id BIGINT UNSIGNED,
+				FOREIGN_KEY('business_id') REFERENCES business(id) ON DELETE CASCADE,
+				type ENUM('single','variable'),
+				brand_id BIGINT UNSIGNED,
+				FOREIGN_KEY('brand_id') REFERENCES brand(id) ON DELETE CASCADE,
+				category_id BIGINT UNSIGNED,
+				FOREIGN_KEY('category_id') REFERENCES categories(id) ON DELETE CASCADE,
+				sub_category_id BIGINT UNSIGNED,
+				FOREIGN_KEY('sub_category_id') REFERENCES categories(id) ON DELETE CASCADE,
+				tax BIGINT UNSIGNED NULL,
+				FOREIGN_KEY('tax') REFERENCES tax_rates(id),
+				tax_type ENUM('inclusive','exclusive'),
+				enable_stock BOOLEAN DEFAULT '0',
+				alert_quantity DECIMAL(22,4) DEFAULT '0',
+				sku VARCHAR(256),
+				barcode_type ENUM('C39', 'C128', 'EAN-13', 'EAN-8', 'UPC-A', 'UPC-E', 'ITF-14'),
+				created_by BIGINT UNSIGNED,
+				FOREIGN_KEY('created_by') REFERENCES users(id) ON DELETE CASCADE,
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+			) $charset_collate;
+			CREATE TABLE {$wpdb->prefix}brands(
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				business_id BIGINT UNSIGNED NOT NULL,
+				FOREIGN_KEY('business_id') REFERENCES business(id) ON DELETE CASCADE,
+				name VARCHAR(256),
+				description text NUll,
+				created_by BIGINT UNSIGNED,
+				FOREIGN_KEY('created_by') REFERENCES users(id) ON DELETE CASCADE,
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+			) $charset_collate;
+			CREATE TABLE {$wpdb->prefix}categories(
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				name VARCHAR(256),
+				business_id BIGINT UNSIGNED NOT NULL,
+				FOREIGN_KEY('business_id') REFERENCES business(id) ON DELETE CASCADE,
+				short_code VARCHAR(256) NULL,
+				parent_id BIGINT,
+				FOREIGN_KEY('created_by') REFERENCES users(id) ON DELETE CASCADE,
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+			) $charset_collate;
+			CREATE TABLE {$wpdb->prefix}warranties(
+				id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+				name VARCHAR(256),
+				business_id BIGINT,
+				description VARCHAR NULL,
+				duration BIGINT,
+				duration_type ENUM('days','months,'years'),
+				created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+			) $charset_collate;
+		";
 		return $tables;
 	}
 
@@ -370,6 +426,10 @@ class WPRetail_install {
 		$tables = [
 			"{$wpdb->prefix}business",
 			"{$wpdb->prefix}business_location",
+			"{$wpdb->prefix}products",
+			"{$wpdb->prefix}brands",
+			"{$wpdb->prefix}categories",
+			"{$wpdb->prefix}warranties",
 			"{$wpdb->prefix}wpretail_sessions",
 		];
 
