@@ -82,6 +82,9 @@ class Admin_Menus {
 					case 'product':
 						include plugin_dir_path( WPRETAIL_PLUGIN_FILE ) . '/views/product.php';
 						break;
+					case 'settings':
+						include plugin_dir_path( WPRETAIL_PLUGIN_FILE ) . '/views/settings.php';
+						break;
 					default:
 						include plugin_dir_path( WPRETAIL_PLUGIN_FILE ) . '/views/dashboard.php';
 				}
