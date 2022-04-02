@@ -12,6 +12,9 @@
 					<a class="nav-link active" aria-current="page" href="#"> <i class="fa-solid fa-chart-pie"></i> Analytics</a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" aria-current="page" href="<?php echo admin_url('admin.php?page=wpretail&target=product'); ?>"> <i class="fa fas fa-cubes"></i> Products</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" aria-current="page" href="<?php echo admin_url('admin.php?page=wpretail&target=purchase'); ?>"> <i class="fa-solid fa-bag-shopping"></i>  Purchase</a>
 				</li>
 				<li class="nav-item">
