@@ -27,6 +27,7 @@ class WPRetail_Settings {
 		add_action( 'wpretail_view_location_setting', [ $this, 'view_location_setting' ] );
 
 		add_filter( 'wpretail_form_fields_options', [ $this, 'form_fields_option' ] );
+
 	}
 
 	/**
@@ -35,7 +36,7 @@ class WPRetail_Settings {
 	 * @param mixed $field_options
 	 * @return void
 	 */
-	public function form_fields_option( $field_options ) {
+	public function form_fields_option( $field_options = [] ) {
 		$currencies = [];
 		foreach ( wpretail()->helper->wpretail_get_currencies() as $key => $currency ) {
 			$currencies[ $key ] = $currency['name'];
@@ -415,6 +416,9 @@ class WPRetail_Settings {
 				'attr'              => [
 					'action' => admin_url(),
 					'method' => 'post',
+				],
+				'data' => [
+					'target' => 'wpretail-business-settings'
 				],
 				'form_title'        => __( 'Add Business Location', 'wpreatil' ),
 				'form_submit_id'    => 'wpretail_add_location',

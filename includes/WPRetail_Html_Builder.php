@@ -263,6 +263,8 @@ class WPRetail_Html_Builder {
 			$input['name'] = '';
 		}
 
+		$input['name'] = 'wpretail['.$input['name'].']';
+
 		if ( empty( $input['id'] ) ) {
 			$input['id'] = '';
 		}
@@ -529,6 +531,11 @@ class WPRetail_Html_Builder {
 	 */
 	public static function form( $args ) {
 		$form_args  = $args['form_args'];
+		if( !empty($form_args['class'])) {
+			$form_args['class'] [] = 'wpretail-form';
+		} else {
+			$form_args['class'] = ['wpretail-form'];
+		}
 		$input_args = $args['input_args'];
 		self::form_modal( $form_args );
 		self::html( 'form', $form_args );
@@ -548,7 +555,7 @@ class WPRetail_Html_Builder {
 		self::html( 'div' );
 		self::html( 'div' );
 		if(empty($form_args['is_modal']) || true !== $form_args['is_modal']) {
-			self::html('button', ['attr' => ['type' => 'button'], 'class' => ['btn btn-primary ' . esc_attr( $form_args['form_submit_id'] )], 'content' => $form_args['form_submit_label'], 'closed' => true]);
+			self::html('button', ['attr' => ['type' => 'submit'], 'class' => ['btn btn-primary wpretail-submit ' . esc_attr( $form_args['form_submit_id'] )], 'content' => $form_args['form_submit_label'], 'closed' => true]);
 		}
 		self::html( 'form' );
 		self::form_modal( $form_args, true );
@@ -560,7 +567,7 @@ class WPRetail_Html_Builder {
 				echo '</div>';
 				echo '<div class="modal-footer">';
 				echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-				echo '<button type="button" class="btn btn-primary ' . esc_attr( $form_args['form_submit_id'] ) . '">' . wp_kses_post( $form_args['form_submit_label'] ) . '</button>';
+				echo '<button type="button" class="btn btn-primary wpretail-submit ' . esc_attr( $form_args['form_submit_id'] ) . '">' . wp_kses_post( $form_args['form_submit_label'] ) . '</button>';
 				echo '</div>';
 				echo '</div>';
 				echo '</div>';
