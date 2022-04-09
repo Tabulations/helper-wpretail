@@ -2,7 +2,7 @@
 	<div class="row flex-nowrap">
 		<div class="wpretail-sidebar col-auto col-md-3 col-xl-2 px-0">
 			<div class="d-flex flex-column px-0">
-				<ul class="nav  nav-tabs flex-column mb-sm-auto mb-0" id="menu">
+				<ul class="nav nav-tabs flex-column mb-sm-auto mb-0" id="menu">
 					<?php
 						$product_options = apply_filters( 'wpretail_products_options', [] );
 					if ( ! empty( $product_options ) ) {
@@ -19,7 +19,7 @@
 			</div>
 		</div>
 		<div class="col py-3">
-			<div class="container">
+			<div class="container card p-4">
 				<div class="row">
 					<div class="col-md-12">
 					<div class="tab-content">
@@ -38,3 +38,10 @@
 		</div>
 	</div>
 </div>
+<script>
+	jQuery(function(){
+		jQuery( '.wpretail-datatable' ).each( function() {
+			jQuery( this ).DataTable();
+		})
+	});
+</script>
