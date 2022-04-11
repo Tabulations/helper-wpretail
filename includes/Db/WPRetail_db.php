@@ -70,4 +70,28 @@ class WPRetail_Db {
 			$where
 		);
 	}
+
+		/**
+		 * Brand Data.
+		 *
+		 * @param mixed $args Args.
+		 * @param mixed $where Args.
+		 * @return int ID.
+		 */
+	public function get_brand() {
+		$brand_query = $this->db->get_results( 'SELECT name,description FROM wp_wpretail_brands' );
+		return (array) $brand_query;
+	}
+
+		/**
+		 * Brand Data.
+		 *
+		 * @param mixed $args Args.
+		 * @param mixed $where Args.
+		 * @return int ID.
+		 */
+		public function get_category() {
+			$category_query = $this->db->get_results( 'SELECT name,short_code,description FROM wp_wpretail_categories' );
+			return (array) $category_query;
+		}
 }

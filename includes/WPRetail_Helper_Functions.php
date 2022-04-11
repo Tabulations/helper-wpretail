@@ -231,4 +231,12 @@ class WPRetail_Helper_Functions {
 
 		return apply_filters( 'everest_forms_currencies', $currencies );
 	}
+
+	function wpretail_get_current_user_id() {
+		if ( ! function_exists( 'wp_get_current_user' ) ) {
+			return 0;
+		}
+		$user = wp_get_current_user();
+		return ( isset( $user->ID ) ? (int) $user->ID : 0 );
+	}
 }

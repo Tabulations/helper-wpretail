@@ -32,6 +32,51 @@ class WPRetail_Products {
 		add_action( 'wpretail_view_brand', [ $this, 'view_brand' ] );
 		add_action( 'wpretail_view_list', [ $this, 'view_list' ] );
 		add_action( 'wpretail_view_warranty', [ $this, 'view_warranty' ] );
+
+		// DB Handler.
+		add_action( 'wpretail_brand_handler', [ $this, 'brand_handler' ] );
+	}
+
+		/**
+		 * Business setting handler.
+		 *
+		 * @param mixed $ajax Ajax.
+		 * @return void
+		 */
+	public function brand_handler( $ajax ) {
+
+		$fields = [
+			'name'        => $ajax->sanitized_fields['brand_name'],
+			'business_id' => 1,
+			'description' => $ajax->sanitized_fields['brand_description'],
+			'created_by'  => wpretail()->helper->wpretail_get_current_user_id(),
+		];
+		$db     = new WPRetail\Db\WPRetail_Db( 'wpretail_brands' );
+
+		try {
+			if ( ! empty( $ajax->sanitized_fields['brand_id'] ) ) {
+				$where = [ $ajax->sanitized_fields['brand_id'] ];
+				$id    = $db->update( $fields, $where );
+				if ( $id ) {
+					$ajax->success['message'] = 'Brand updated successfully';
+					$ajax->success['id']      = $id;
+				} else {
+					$ajax->errors['message'] = 'Brand could not be updated';
+				}
+			} else {
+				$where = [ $ajax->sanitized_fields['brand_id'] ];
+				$id    = $db->insert( $fields );
+				if ( $id ) {
+					$ajax->success['message'] = 'Brand added successfully';
+					$ajax->success['id']      = $id;
+				} else {
+					$ajax->errors['message'] = 'Brand could not be added';
+				}
+			}
+		} catch ( \Exception $e ) {
+			$ajax->errors['message'] = $e->getMessage();
+		}
+
 	}
 
 	/**
@@ -147,6 +192,9 @@ class WPRetail_Products {
 	public function view_brand() {
 		$field_options = apply_filters( 'wpretail_form_fields_options', [] );
 		$settings      = $field_options['brand'];
+		$db            = new WPRetail\Db\WPRetail_Db( 'wpretail_brands' );
+		$brand_query   = $db->get_brand();
+
 		wpretail()->builder->html(
 			'button',
 			[
@@ -169,13 +217,8 @@ class WPRetail_Products {
 					__( 'Note', 'wpretail' ),
 					__( 'Action', 'wpretail' ),
 				],
-				'body'  => [
-					[
-						'test',
-						'test',
-						'test',
-					],
-				],
+				'body'  =>
+				$brand_query,
 				'class' => [ 'wpretail-datatable', 'table table-primary mt-5' ],
 				'col'   => 'col-md-12',
 
@@ -210,6 +253,8 @@ class WPRetail_Products {
 	public function view_category() {
 		$field_options = apply_filters( 'wpretail_form_fields_options', [] );
 		$settings      = $field_options['category'];
+		$db            = new WPRetail\Db\WPRetail_Db( 'wpretail_categories' );
+		$brand_query   = $db->get_brand();
 		wpretail()->builder->html(
 			'button',
 			[
@@ -441,17 +486,18 @@ class WPRetail_Products {
 			],
 
 		];
-		$brand = [
+		$brand    = [
 			'brand_name'        => [
-				'label' => [
+				'label'       => [
 					'content' => __( 'Brand Name ' ) . '*',
 				],
-				'input' => [
+				'input'       => [
 					'type' => 'text',
 					'name' => 'brand_name',
 					'id'   => 'brand_name',
 				],
-				'col'   => 'col-md-12',
+				'validations' => [ 'required' ],
+				'col'         => 'col-md-12',
 			],
 			'brand_description' => [
 				'label' => [
@@ -465,8 +511,8 @@ class WPRetail_Products {
 				'col'   => 'col-md-12',
 			],
 		];
-		$brand = [
-			'warranty_name'        => [
+		$warranty = [
+			'warranty_name'          => [
 				'label' => [
 					'content' => __( 'Warranty Name ' ) . '*',
 				],
@@ -477,7 +523,7 @@ class WPRetail_Products {
 				],
 				'col'   => 'col-md-12',
 			],
-			'warranty_description' => [
+			'warranty_description'   => [
 				'label' => [
 					'content' => __( 'Warranty Description ' ),
 				],
@@ -488,9 +534,9 @@ class WPRetail_Products {
 				],
 				'col'   => 'col-md-12',
 			],
-			'warranty_duration'        => [
+			'warranty_duration'      => [
 				'label' => [
-					'content' => __( 'Warranty Duration','wpretail') ,
+					'content' => __( 'Warranty Duration', 'wpretail' ),
 				],
 				'input' => [
 					'type' => 'text',
@@ -499,11 +545,11 @@ class WPRetail_Products {
 				],
 				'col'   => 'col-md-6 ',
 			],
-			'warranty_duration_type'    => [
+			'warranty_duration_type' => [
 				'input' => [
 					'type'    => 'select',
 					'name'    => 'warranty_duration_type',
-					'class'	=>['mt-2'],
+					'class'   => [ 'mt-2' ],
 					'id'      => 'warranty_duration_type',
 					'options' => [
 						'days'  => 'Days',
@@ -521,6 +567,7 @@ class WPRetail_Products {
 					'add_product' => $add_product,
 					'category'    => $category,
 					'brand'       => $brand,
+					'warranty'    => $warranty,
 				]
 			)
 		);
