@@ -78,9 +78,17 @@ class WPRetail_Db {
 		 * @param mixed $where Args.
 		 * @return int ID.
 		 */
-	public function get_brand() {
-		$brand_query = $this->db->get_results( 'SELECT name,description FROM wp_wpretail_brands' );
-		return (array) $brand_query;
+	public function get_brand( $id = null ) {
+		if ( ! empty( $id ) ) {
+			$brand = $this->db->get_results(
+				$this->db->prepare(
+					"SELECT * FROM {$this->db->prefix}wpretail_brands WHERE `id` = %s",
+					$id
+				)
+			);
+		}
+
+		return (array) $brand;
 	}
 
 		/**
@@ -90,8 +98,30 @@ class WPRetail_Db {
 		 * @param mixed $where Args.
 		 * @return int ID.
 		 */
-		public function get_category() {
-			$category_query = $this->db->get_results( 'SELECT name,short_code,description FROM wp_wpretail_categories' );
-			return (array) $category_query;
+	public function get_category() {
+		$category_query = $this->db->get_results( 'SELECT name,short_code,description FROM wp_wpretail_categories' );
+		return (array) $category_query;
+	}
+
+	/**
+	 * Get Business.
+	 *
+	 * @param mixed $id ID.
+	 * @return mixed $business Business.
+	 */
+	public function get_business( $id = null ) {
+		if ( ! empty( $id ) ) {
+			$business = $this->db->get_results(
+				$this->db->prepare(
+					"SELECT * FROM {$this->db->prefix}wpretail_business WHERE `id` = %s",
+					$id
+				)
+			);
+		} else {
+			$business = $this->db->get_results(
+				"SELECT * FROM {$this->db->prefix}wpretail_business WHERE status = TRUE"
+			);
 		}
+		return (array) $business;
+	}
 }
