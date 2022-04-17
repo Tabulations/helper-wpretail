@@ -86,8 +86,11 @@ class WPRetail_Db {
 					$id
 				)
 			);
+		} else {
+			$brand = $this->db->get_results(
+				"SELECT * FROM {$this->db->prefix}wpretail_brands WHERE status = TRUE"
+			);
 		}
-
 		return (array) $brand;
 	}
 
@@ -99,8 +102,19 @@ class WPRetail_Db {
 		 * @return int ID.
 		 */
 	public function get_category() {
-		$category_query = $this->db->get_results( 'SELECT name,short_code,description FROM wp_wpretail_categories' );
-		return (array) $category_query;
+		if ( ! empty( $id ) ) {
+			$category = $this->db->get_results(
+				$this->db->prepare(
+					"SELECT * FROM {$this->db->prefix}wpretail_categories WHERE `id` = %s",
+					$id
+				)
+			);
+		} else {
+			$category = $this->db->get_results(
+				"SELECT * FROM {$this->db->prefix}wpretail_categories WHERE status= TRUE"
+			);
+		}
+		return (array) $category;
 	}
 
 	/**
