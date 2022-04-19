@@ -80,7 +80,7 @@ class WPRetail_Db {
 		 */
 	public function get_brand( $id = null ) {
 		if ( ! empty( $id ) ) {
-			$brand = $this->db->get_results(
+			$brand = $this->db->get_row(
 				$this->db->prepare(
 					"SELECT * FROM {$this->db->prefix}wpretail_brands WHERE `id` = %s",
 					$id
@@ -95,15 +95,15 @@ class WPRetail_Db {
 	}
 
 		/**
-		 * Brand Data.
+		 * Categiry Data.
 		 *
 		 * @param mixed $args Args.
 		 * @param mixed $where Args.
 		 * @return int ID.
 		 */
-	public function get_category() {
+	public function get_category( $id = null ) {
 		if ( ! empty( $id ) ) {
-			$category = $this->db->get_results(
+			$category = $this->db->get_row(
 				$this->db->prepare(
 					"SELECT * FROM {$this->db->prefix}wpretail_categories WHERE `id` = %s",
 					$id
@@ -112,6 +112,31 @@ class WPRetail_Db {
 		} else {
 			$category = $this->db->get_results(
 				"SELECT * FROM {$this->db->prefix}wpretail_categories WHERE status= TRUE"
+			);
+		}
+		return (array) $category;
+	}
+
+		/**
+		 * Warranty Data.
+		 *
+		 * @param mixed $args Args.
+		 * @param mixed $where Args.
+		 * @return int ID.
+		 */
+	public function get_warranty( $id = null ) {
+		if ( ! empty( $id ) ) {
+			$category = $this->db->get_row(
+				$this->db->prepare(
+					"SELECT * FROM {$this->db->prefix}wpretail_warranties
+						WHERE `id` = %s",
+					$id
+				)
+			);
+		} else {
+			$category = $this->db->get_results(
+				"SELECT * FROM {$this->db->prefix}wpretail_warranties
+					WHERE status= TRUE"
 			);
 		}
 		return (array) $category;

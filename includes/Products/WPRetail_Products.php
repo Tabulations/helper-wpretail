@@ -36,74 +36,298 @@ class WPRetail_Products {
 		// DB Handler.
 		add_action( 'wpretail_brand_handler', [ $this, 'brand_handler' ] );
 		add_action( 'wpretail_list_brand_handler', [ $this, 'list_brand_handler' ] );
+
+		// category Handler.
+		add_action( 'wpretail_category_handler', [ $this, 'category_handler' ] );
 		add_action( 'wpretail_list_category_handler', [ $this, 'list_category_handler' ] );
+
+		// Warrenty Handler.
+		add_action( 'wpretail_warranty_handler', [ $this, 'warranty_handler' ] );
+		add_action( 'wpretail_list_warranty_handler', [ $this, 'list_warranty_handler' ] );
 	}
 
-		/**
-		 * List Category Setting Handler.
-		 *
-		 * @param mixed $ajax Ajax Object.
-		 * @return void
-		 */
-		public function list_category_handler( $ajax ) {
-			if ( ! empty( $ajax->event ) ) {
-				if ( ! empty( $ajax->event['action'] ) && ! empty( $ajax->event['id'] ) && 'delete' === $ajax->event['action'] ) {
-					$db    = new WPRetail\Db\WPRetail_Db( 'wpretail_categories' );
-					$where = [ 'id' => $ajax->event['id'] ]; // Business ID is always 1.
-					try {
-						$id = $db->update( [ 'status' => false ], $where );
-						if ( $id ) {
-							$ajax->success['message'] = __( 'Category Removed Successfully', 'wpretail' );
+	/**
+	 * List Warranty Handler.
+	 *
+	 * @param mixed $ajax Ajax Object.
+	 * @return void
+	 */
+	public function list_warranty_handler( $ajax ) {
+
+		if ( ! empty( $ajax->event ) ) {
+			if ( ! empty( $ajax->event['action'] ) ) {
+				switch ( $ajax->event['action'] ) {
+					case 'delete':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db    = new WPRetail\Db\WPRetail_Db( 'wpretail_warranties' );
+							$where = [ 'id' => $ajax->event['id'] ]; // Business ID is always 1.
+							try {
+								$id = $db->update( [ 'status' => false ], $where );
+								if ( $id ) {
+									$ajax->success['message'] = __( 'Warranty removed successsfully', 'wpretail' );
+								} else {
+									$ajax->errors['message'] = __( 'Warranty could not be removed, Please repload the page and try again', 'wpretail' );
+								}
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
 						} else {
-							$ajax->errors['message'] = __( 'Sorry,Something went wrong', 'wpretail' );
+							$ajax->errors['message'] = __( 'Id not found, please reload the page and try again', 'wpretail' );
 						}
-					} catch ( \Exception $e ) {
-						$ajax->errors['message'] = $e->getMessage();
-					}
-				} else {
-					$ajax->errors['message'] = __( 'Object not found, Please try again', 'wpretail' );
+						break;
+					case 'edit':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db = new WPRetail\Db\WPRetail_Db( 'wpretail_warranties' );
+							try {
+								$warranty                  = $db->get_warranty( $ajax->event['id'] );
+								$fields                    = [
+									'business_id'          => '1', // Always.
+									'warranty_name'        => $warranty['name'],
+									'warranty_description' => $warranty['description'],
+									'warranty_duration'    => $warranty['duration'],
+									'warranty_duration_type' => $warranty['duration_type'],
+								];
+								$ajax->success['message']  = __( 'Update Warranty', 'wpretail' );
+								$ajax->success['location'] = $fields;
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
+						}
+						break;
+					default:
+						$ajax->errors['message'] = __( 'Object not found, Please try again', 'wpretail' );
 				}
 			} else {
 				$ajax->errors['message'] = __( 'Event not found, Please try again', 'wpretail' );
 			}
 		}
+	}
 
+	/**
+	 * Warranty handler.
+	 *
+	 * @param mixed $ajax Ajax.
+	 * @return void
+	 */
+	public function warranty_handler( $ajax ) {
 
-		/**
-		 * List Brand Setting Handler.
-		 *
-		 * @param mixed $ajax Ajax Object.
-		 * @return void
-		 */
-	public function list_brand_handler( $ajax ) {
+		$fields = [
+			'name'          => $ajax->sanitized_fields['warranty_name'],
+			'business_id'   => 1,
+			'description'   => $ajax->sanitized_fields['warranty_description'],
+			'duration'      => $ajax->sanitized_fields['warranty_duration'],
+			'duration_type' => $ajax->sanitized_fields['warranty_duration_type'],
+			'status'        => 1,
+		];
+		$db     = new WPRetail\Db\WPRetail_Db( 'wpretail_warranties' );
+
+		try {
+			if ( ! empty( $ajax->event['id'] ) ) {
+				$where = [ 'id' => $ajax->event['id'] ];
+				$id    = $db->update( $fields, $where );
+				if ( $id ) {
+					$ajax->success['message'] = 'Warranty updated successfully';
+					$ajax->success['id']      = $ajax->event['id'];
+					$formatted_fields         = [
+						'business_id'            => '1', // Always.
+						'status'                 => '1', // Always.
+						'warranty_name'          => $fields['name'],
+						'warranty_description'   => $fields['description'],
+						'warranty_duration'      => $fields['duration'],
+						'warranty_duration_type' => $fields['duration_type'],
+					];
+					$ajax->success['updated'] = $formatted_fields;
+				} else {
+					$ajax->errors['message'] = 'Warranty could not be updated';
+				}
+				return;
+			} else {
+				$id = $db->insert( $fields );
+				if ( $id ) {
+					$ajax->success['message']  = __( 'Warranty added successfully', 'wpretail' );
+					$ajax->success['id']       = $db->get_last_insert_id();
+					$ajax->success['inserted'] = $fields;
+				} else {
+					$ajax->errors['message'] = __( 'Warranty Could not be added', 'wpretail' );
+				}
+			}
+		} catch ( \Exception $e ) {
+			$ajax->errors['message'] = $e->getMessage();
+		}
+
+	}
+
+	/**
+	 * List Category Setting Handler.
+	 *
+	 * @param mixed $ajax Ajax Object.
+	 * @return void
+	 */
+	public function list_category_handler( $ajax ) {
+
 		if ( ! empty( $ajax->event ) ) {
-			if ( ! empty( $ajax->event['action'] ) && ! empty( $ajax->event['id'] ) && 'delete' === $ajax->event['action'] ) {
-				$db    = new WPRetail\Db\WPRetail_Db( 'wpretail_brands' );
-				$where = [ 'id' => $ajax->event['id'] ]; // Business ID is always 1.
-				try {
-					$id = $db->update( [ 'status' => false ], $where );
-					if ( $id ) {
-						$ajax->success['message'] = __( 'Brand Removed Successfully', 'wpretail' );
-					} else {
-						$ajax->errors['message'] = __( 'Brand Removed Successfully', 'wpretail' );
-					}
-				} catch ( \Exception $e ) {
-					$ajax->errors['message'] = $e->getMessage();
+			if ( ! empty( $ajax->event['action'] ) ) {
+				switch ( $ajax->event['action'] ) {
+					case 'delete':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db    = new WPRetail\Db\WPRetail_Db( 'wpretail_categories' );
+							$where = [ 'id' => $ajax->event['id'] ]; // Business ID is always 1.
+							try {
+								$id = $db->update( [ 'status' => false ], $where );
+								if ( $id ) {
+									$ajax->success['message'] = __( 'category removed successsfully', 'wpretail' );
+								} else {
+									$ajax->errors['message'] = __( 'category could not be removed, Please repload the page and try again', 'wpretail' );
+								}
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
+						} else {
+							$ajax->errors['message'] = __( 'Id not found, please reload the page and try again', 'wpretail' );
+						}
+						break;
+					case 'edit':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db = new WPRetail\Db\WPRetail_Db( 'wpretail_categories' );
+							try {
+								$category = $db->get_category( $ajax->event['id'] );
+								error_log( print_r( $category, true ) );
+								$fields                    = [
+									'business_id'          => '1', // Always.
+									'category_name'        => $category['name'],
+									'category_code'        => $category['short_code'],
+									'category_description' => $category['description'],
+								];
+								$ajax->success['message']  = __( 'Update category', 'wpretail' );
+								$ajax->success['location'] = $fields;
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
+						}
+						break;
+					default:
+						$ajax->errors['message'] = __( 'Object not found, Please try again', 'wpretail' );
 				}
 			} else {
-				$ajax->errors['message'] = __( 'Object not found, Please try again', 'wpretail' );
+				$ajax->errors['message'] = __( 'Event not found, Please try again', 'wpretail' );
 			}
-		} else {
-			$ajax->errors['message'] = __( 'Event not found, Please try again', 'wpretail' );
 		}
 	}
 
-		/**
-		 * Business setting handler.
-		 *
-		 * @param mixed $ajax Ajax.
-		 * @return void
-		 */
+	/**
+	 * Category handler.
+	 *
+	 * @param mixed $ajax Ajax.
+	 * @return void
+	 */
+	public function category_handler( $ajax ) {
+
+		$fields = [
+			'name'        => $ajax->sanitized_fields['category_name'],
+			'business_id' => 1,
+			'short_code'  => $ajax->sanitized_fields['category_code'],
+			'parent_id'   => 1,
+			'description' => $ajax->sanitized_fields['description'],
+			'created_by'  => wpretail()->helper->wpretail_get_current_user_id(),
+			'status'      => 1,
+		];
+		$db     = new WPRetail\Db\WPRetail_Db( 'wpretail_categories' );
+
+		try {
+			if ( ! empty( $ajax->event['id'] ) ) {
+				$where = [ 'id' => $ajax->event['id'] ];
+				$id    = $db->update( $fields, $where );
+				if ( $id ) {
+					$ajax->success['message'] = 'Category updated successfully';
+					$ajax->success['id']      = $ajax->event['id'];
+					$formatted_fields         = [
+						'business_id'          => '1', // Always.
+						'status'               => '1', // Always.
+						'category_code'        => $fields['short_code'],
+						'category_name'        => $fields['name'],
+						'category_description' => $fields['description'],
+					];
+					$ajax->success['updated'] = $formatted_fields;
+				} else {
+					$ajax->errors['message'] = 'Category could not be updated';
+				}
+				return;
+			} else {
+				$id = $db->insert( $fields );
+				if ( $id ) {
+					$ajax->success['message']  = __( 'Category added successfully', 'wpretail' );
+					$ajax->success['id']       = $db->get_last_insert_id();
+					$ajax->success['inserted'] = $fields;
+				} else {
+					$ajax->errors['message'] = __( 'Category Could not be added', 'wpretail' );
+				}
+			}
+		} catch ( \Exception $e ) {
+			$ajax->errors['message'] = $e->getMessage();
+		}
+
+	}
+
+	/**
+	 * List Brand Setting Handler.
+	 *
+	 * @param mixed $ajax Ajax Object.
+	 * @return void
+	 */
+	public function list_brand_handler( $ajax ) {
+		if ( ! empty( $ajax->event ) ) {
+			if ( ! empty( $ajax->event['action'] ) ) {
+				switch ( $ajax->event['action'] ) {
+					case 'delete':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db    = new WPRetail\Db\WPRetail_Db( 'wpretail_brands' );
+							$where = [ 'id' => $ajax->event['id'] ]; // Business ID is always 1.
+							try {
+								$id = $db->update( [ 'status' => false ], $where );
+								if ( $id ) {
+									$ajax->success['message'] = __( 'Brand removed successsfully', 'wpretail' );
+								} else {
+									$ajax->errors['message'] = __( 'Brand could not be removed, Please repload the page and try again', 'wpretail' );
+								}
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
+						} else {
+							$ajax->errors['message'] = __( 'Id not found, please reload the page and try again', 'wpretail' );
+						}
+						break;
+					case 'edit':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db = new WPRetail\Db\WPRetail_Db( 'wpretail_brands' );
+							try {
+								$brand                     = $db->get_brand( $ajax->event['id'] );
+								$fields                    = [
+									'business_id'       => '1', // Always.
+									'brand_name'        => $brand['name'],
+									'brand_description' => $brand['description'],
+								];
+								$ajax->success['message']  = __( 'Update brand', 'wpretail' );
+								$ajax->success['location'] = $fields;
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
+						}
+						break;
+					default:
+						$ajax->errors['message'] = __( 'Object not found, Please try again', 'wpretail' );
+				}
+			} else {
+				$ajax->errors['message'] = __( 'Event not found, Please try again', 'wpretail' );
+			}
+		}
+	}
+
+	/**
+	 * Business setting handler.
+	 *
+	 * @param mixed $ajax Ajax.
+	 * @return void
+	 */
 	public function brand_handler( $ajax ) {
 
 		$fields = [
@@ -111,27 +335,36 @@ class WPRetail_Products {
 			'business_id' => 1,
 			'description' => $ajax->sanitized_fields['brand_description'],
 			'created_by'  => wpretail()->helper->wpretail_get_current_user_id(),
+			'status'      => 1,
 		];
 		$db     = new WPRetail\Db\WPRetail_Db( 'wpretail_brands' );
 
 		try {
-			if ( ! empty( $ajax->sanitized_fields['brand_id'] ) ) {
-				$where = [ $ajax->sanitized_fields['brand_id'] ];
+			if ( ! empty( $ajax->event['id'] ) ) {
+				$where = [ 'id' => $ajax->event['id'] ];
 				$id    = $db->update( $fields, $where );
 				if ( $id ) {
 					$ajax->success['message'] = 'Brand updated successfully';
-					$ajax->success['id']      = $id;
+					$ajax->success['id']      = $ajax->event['id'];
+					$formatted_fields         = [
+						'business_id'       => '1', // Always.
+						'status'            => '1', // Always.
+						'brand_name'        => $fields['name'],
+						'brand_description' => $fields['description'],
+					];
+					$ajax->success['updated'] = $formatted_fields;
 				} else {
 					$ajax->errors['message'] = 'Brand could not be updated';
 				}
+				return;
 			} else {
-				$where = [ $ajax->sanitized_fields['brand_id'] ];
-				$id    = $db->insert( $fields );
+				$id = $db->insert( $fields );
 				if ( $id ) {
-					$ajax->success['message'] = 'Brand added successfully';
-					$ajax->success['id']      = $id;
+					$ajax->success['message']  = __( 'Brand added successfully', 'wpretail' );
+					$ajax->success['id']       = $db->get_last_insert_id();
+					$ajax->success['inserted'] = $fields;
 				} else {
-					$ajax->errors['message'] = 'Brand could not be added';
+					$ajax->errors['message'] = __( 'Brand Could not be added', 'wpretail' );
 				}
 			}
 		} catch ( \Exception $e ) {
@@ -147,7 +380,8 @@ class WPRetail_Products {
 	 */
 	public function view_warranty() {
 		$field_options = apply_filters( 'wpretail_form_fields_options', [] );
-		$settings      = $field_options['brand'];
+		$settings      = $field_options['warranty'];
+		$db            = new WPRetail\Db\WPRetail_Db( 'wpretail_warranties' );
 		wpretail()->builder->html(
 			'button',
 			[
@@ -158,29 +392,38 @@ class WPRetail_Products {
 				'attr'    => [ 'type' => 'button' ],
 				'data'    => [
 					'bs-toggle' => 'modal',
-					'bs-target' => '#wpretail_warranty',
+					'bs-target' => '#wpretail_warranty_modal',
 				],
 			]
 		);
 
 		wpretail()->builder->table(
 			[
-				'head'  => [
-					__( 'Name', 'wpretail' ),
-					__( 'Description', 'wpretail' ),
-					__( 'Duration', 'wpretail' ),
-					__( 'Action', 'wpretail' ),
-				],
-				'body'  => [
-					[
-						'test',
-						'test',
-						'test',
-						'test',
+				'head'    => [
+					'labels' => [
+						'name'        => __( 'Name', 'wpretail' ),
+						'description' => __( 'Description', 'wpretail' ),
+						'duration'    => __( 'Duration', 'wpretail' ),
+					],
+					'data'   => [
+						'name'          => 'warranty_name',
+						'description'   => 'warranty_description',
+						'duration'      => 'warranty_duration',
+						'duration_type' => 'warranty_duration_type',
 					],
 				],
-				'class' => [ 'wpretail-datatable', 'table table-primary mt-5' ],
-				'col'   => 'col-md-12',
+				'actions' => [
+					'options'        => [
+						'edit',
+						'delete',
+					],
+					'delete_confirm' => __( 'Are you sure you want to remove?', 'wpretail' ),
+					'update_confirm' => __( 'Are you sure you want to update?', 'wpretail' ),
+				],
+				'id'      => 'wpretail_list_warranty',
+				'body'    => $db->get_warranty(),
+				'class'   => [ 'wpretail-datatable', 'table table-primary mt-5' ],
+				'col'     => 'col-md-12',
 
 			]
 		);
@@ -205,25 +448,28 @@ class WPRetail_Products {
 			wpretail()->builder->form( $args );
 	}
 
-		/**
-		 * Add List View.
-		 *
-		 * @return void
-		 */
+	/**
+	 * Add List View.
+	 *
+	 * @return void
+	 */
 	public function view_list() {
 		$field_options = apply_filters( 'wpretail_form_fields_options', [] );
 		wpretail()->builder->table(
 			[
 				'head'  => [
-					__( 'Product', 'wpretail' ),
-					__( 'Business Location', 'wpretail' ),
-					__( 'Unit Purchase Price', 'wpretail' ),
-					__( 'Unit Selling Price', 'wpretail' ),
-					__( 'Current Stock', 'wpretail' ),
-					__( 'Product Type', 'wpretail' ),
-					__( 'Category', 'wpretail' ),
-					__( 'Brand', 'wpretail' ),
-					__( 'SKU', 'wpretail' ),
+					'labels' => [
+						__( 'Product', 'wpretail' ),
+						__( 'Business Location', 'wpretail' ),
+						__( 'Unit Purchase Price', 'wpretail' ),
+						__( 'Unit Selling Price', 'wpretail' ),
+						__( 'Current Stock', 'wpretail' ),
+						__( 'Product Type', 'wpretail' ),
+						__( 'Category', 'wpretail' ),
+						__( 'Brand', 'wpretail' ),
+						__( 'SKU', 'wpretail' ),
+					],
+
 				],
 				'body'  => [
 					[
@@ -265,7 +511,7 @@ class WPRetail_Products {
 				'attr'    => [ 'type' => 'button' ],
 				'data'    => [
 					'bs-toggle' => 'modal',
-					'bs-target' => '#wpretail_brand',
+					'bs-target' => '#wpretail_brand_modal',
 				],
 			]
 		);
@@ -273,8 +519,14 @@ class WPRetail_Products {
 		wpretail()->builder->table(
 			[
 				'head'    => [
-					'name'        => __( 'Brand', 'wpretail' ),
-					'description' => __( 'Note', 'wpretail' ),
+					'labels' => [
+						'name'        => __( 'Brand', 'wpretail' ),
+						'description' => __( 'Note', 'wpretail' ),
+					],
+					'data'   => [
+						'name'        => 'brand_name',
+						'description' => 'brand_description',
+					],
 				],
 				'actions' => [
 					'options'        => [
@@ -331,7 +583,7 @@ class WPRetail_Products {
 				'attr'    => [ 'type' => 'button' ],
 				'data'    => [
 					'bs-toggle' => 'modal',
-					'bs-target' => '#wpretail_category',
+					'bs-target' => '#wpretail_category_modal',
 				],
 			]
 		);
@@ -339,9 +591,16 @@ class WPRetail_Products {
 		wpretail()->builder->table(
 			[
 				'head'    => [
-					'name'        => __( 'Category', 'wpretail' ),
-					'short_code'  => __( 'Category Code', 'wpretail' ),
-					'description' => __( 'Description', 'wpretail' ),
+					'labels' => [
+						'name'        => __( 'Category', 'wpretail' ),
+						'short_code'  => __( 'Category Code', 'wpretail' ),
+						'description' => __( 'Description', 'wpretail' ),
+					],
+					'data'   => [
+						'name'        => 'category_name',
+						'short_code'  => 'category_code',
+						'description' => 'category_description',
+					],
 				],
 				'actions' => [
 					'options'        => [
@@ -351,9 +610,9 @@ class WPRetail_Products {
 					'delete_confirm' => __( 'Are you sure you want to remove?', 'wpretail' ),
 					'update_confirm' => __( 'Are you sure you want to update?', 'wpretail' ),
 				],
-				'id'      => 'wpretail_list_categories',
+				'id'      => 'wpretail_list_category',
 				'body'    => $db->get_category(),
-				'class' => [ 'wpretail-datatable', 'table table-primary mt-5' ],
+				'class'   => [ 'wpretail-datatable', 'table table-primary mt-5' ],
 				'col'     => 'col-md-12',
 
 			]
