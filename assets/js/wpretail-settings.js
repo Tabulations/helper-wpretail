@@ -426,6 +426,7 @@ jQuery( function ( $ ) {
 										var $input = $( this );
 										var name = $input
 											.attr( 'name' )
+											.replace( '[]', '' )
 											.replace( /\]$/, '' )
 											.replace( /.*\[/, '' );
 										switch ( $input.attr( 'type' ) ) {
@@ -449,6 +450,23 @@ jQuery( function ( $ ) {
 													$input.html(
 														location[ name ]
 													);
+												}
+												break;
+											case 'checkbox':
+												if (
+													Object.keys(
+														location
+													).includes( name )
+												) {
+													if (
+														location[ name ] ===
+														$input.val()
+													) {
+														$input.prop(
+															'checked',
+															true
+														);
+													}
 												}
 												break;
 											case 'select':
