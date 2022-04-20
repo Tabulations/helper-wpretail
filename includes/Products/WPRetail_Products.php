@@ -27,11 +27,14 @@ class WPRetail_Products {
 
 		add_filter( 'wpretail_products_options', [ $this, 'options' ] );
 		add_filter( 'wpretail_form_fields_options', [ $this, 'form_fields_option' ] );
+
+		// View
 		add_action( 'wpretail_view_add_product', [ $this, 'view_add_product' ] );
 		add_action( 'wpretail_view_category', [ $this, 'view_category' ] );
 		add_action( 'wpretail_view_brand', [ $this, 'view_brand' ] );
 		add_action( 'wpretail_view_list', [ $this, 'view_list' ] );
 		add_action( 'wpretail_view_warranty', [ $this, 'view_warranty' ] );
+		add_action( 'wpretail_view_unit', [ $this, 'view_unit' ] );
 
 		// DB Handler.
 		add_action( 'wpretail_brand_handler', [ $this, 'brand_handler' ] );
@@ -44,6 +47,200 @@ class WPRetail_Products {
 		// Warrenty Handler.
 		add_action( 'wpretail_warranty_handler', [ $this, 'warranty_handler' ] );
 		add_action( 'wpretail_list_warranty_handler', [ $this, 'list_warranty_handler' ] );
+
+		// Warrenty Handler.
+		add_action( 'wpretail_unit_handler', [ $this, 'unit_handler' ] );
+		add_action( 'wpretail_list_unit_handler', [ $this, 'list_unit_handler' ] );
+	}
+
+		/**
+	 * List Unit Handler.
+	 *
+	 * @param mixed $ajax Ajax Object.
+	 * @return void
+	 */
+	public function list_unit_handler( $ajax ) {
+
+		if ( ! empty( $ajax->event ) ) {
+			if ( ! empty( $ajax->event['action'] ) ) {
+				switch ( $ajax->event['action'] ) {
+					case 'delete':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db    = new WPRetail\Db\WPRetail_Db( 'wpretail_units' );
+							$where = [ 'id' => $ajax->event['id'] ]; // Business ID is always 1.
+							try {
+								$id = $db->update( [ 'status' => false ], $where );
+								if ( $id ) {
+									$ajax->success['message'] = __( 'Unit removed successsfully', 'wpretail' );
+								} else {
+									$ajax->errors['message'] = __( 'Unit could not be removed, Please repload the page and try again', 'wpretail' );
+								}
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
+						} else {
+							$ajax->errors['message'] = __( 'Id not found, please reload the page and try again', 'wpretail' );
+						}
+						break;
+					case 'edit':
+						if ( ! empty( $ajax->event['id'] ) ) {
+							$db = new WPRetail\Db\WPRetail_Db( 'wpretail_units' );
+							try {
+								$warranty                  = $db->get_unit( $ajax->event['id'] );
+								$fields                    = [
+									'business_id'          => '1', // Always.
+									'unit_name'        => $warranty['name'],
+									'unit_short_name' => $warranty['short_name'],
+									'unit_allow_decimal'    => $warranty['allow_decimal'],
+								];
+								$ajax->success['message']  = __( 'Update Unit', 'wpretail' );
+								$ajax->success['location'] = $fields;
+							} catch ( \Exception $e ) {
+								$ajax->errors['message'] = $e->getMessage();
+							}
+						}
+						break;
+					default:
+						$ajax->errors['message'] = __( 'Object not found, Please try again', 'wpretail' );
+				}
+			} else {
+				$ajax->errors['message'] = __( 'Event not found, Please try again', 'wpretail' );
+			}
+		}
+	}
+
+	/**
+	 * Warranty handler.
+	 *
+	 * @param mixed $ajax Ajax.
+	 * @return void
+	 */
+	public function unit_handler( $ajax ) {
+
+		$fields = [
+			'name'          => $ajax->sanitized_fields['unit_name'],
+			'business_id'   => 1,
+			'short_name'    => $ajax->sanitized_fields['unit_short_name'],
+			'allow_decimal' => $ajax->sanitized_fields['unit_allow_decimal'],
+			'status'        => 1,
+		];
+		$db     = new WPRetail\Db\WPRetail_Db( 'wpretail_units' );
+
+		try {
+			if ( ! empty( $ajax->event['id'] ) ) {
+				$where = [ 'id' => $ajax->event['id'] ];
+				$id    = $db->update( $fields, $where );
+				if ( $id ) {
+					$ajax->success['message'] = 'Unit updated successfully';
+					$ajax->success['id']      = $ajax->event['id'];
+					$formatted_fields         = [
+						'business_id'   => '1', // Always.
+						'status'        => '1', // Always.
+						'unit_name'     => $fields['name'],
+						'unit_short_name'    => $fields['short_name'],
+						'unit_allow_decimal' => $fields['allow_decimal'],
+					];
+					$ajax->success['updated'] = $formatted_fields;
+				} else {
+					$ajax->errors['message'] = 'Unit could not be updated';
+				}
+				return;
+			} else {
+				$id = $db->insert( $fields );
+
+				if ( $id ) {
+					$ajax->success['message']  = __( 'Unit added successfully', 'wpretail' );
+					$ajax->success['id']       = $db->get_last_insert_id();
+					$formatted_fields         = [
+						'business_id'   => '1', // Always.
+						'status'        => '1', // Always.
+						'unit_name'     => $fields['name'],
+						'unit_short_name'    => $fields['short_name'],
+						'unit_allow_decimal' => $fields['allow_decimal'],
+					];
+					$ajax->success['inserted'] = $formatted_fields;
+				} else {
+					$ajax->errors['message'] = __( 'Unit Could not be added', 'wpretail' );
+				}
+			}
+		} catch ( \Exception $e ) {
+			$ajax->errors['message'] = $e->getMessage();
+		}
+
+	}
+
+	/**
+	 * Add Unit View.
+	 *
+	 * @return void
+	 */
+	public function view_unit() {
+		error_log( 'hello', true );
+		$field_options = apply_filters( 'wpretail_form_fields_options', [] );
+		$settings      = $field_options['unit'];
+		$db            = new WPRetail\Db\WPRetail_Db( 'wpretail_units' );
+
+		wpretail()->builder->html(
+			'button',
+			[
+				'id'      => 'add_unit',
+				'content' => __( 'Add Unit' ),
+				'class'   => [ 'mb-3 btn btn-primary' ],
+				'closed'  => true,
+				'attr'    => [ 'type' => 'button' ],
+				'data'    => [
+					'bs-toggle' => 'modal',
+					'bs-target' => '#wpretail_unit_modal',
+				],
+			]
+		);
+
+		wpretail()->builder->table(
+			[
+				'head'    => [
+					'labels' => [
+						'name'       => __( 'Name', 'wpretail' ),
+						'short_name' => __( 'Short name', 'wpretail' ),
+					],
+					'data'   => [
+						'name'       => 'unit_name',
+						'short_name' => 'unit_short_name',
+					],
+				],
+				'actions' => [
+					'options'        => [
+						'edit',
+						'delete',
+					],
+					'delete_confirm' => __( 'Are you sure you want to remove?', 'wpretail' ),
+					'update_confirm' => __( 'Are you sure you want to update?', 'wpretail' ),
+				],
+				'id'      => 'wpretail_list_unit',
+				'body'    => $db->get_unit(),
+				'class'   => [ 'wpretail-datatable', 'table table-primary mt-5' ],
+				'col'     => 'col-md-12',
+
+			]
+		);
+
+		 $args = [
+			 'form_args'  => [
+				 'id'                => 'wpretail_unit',
+				 'class'             => [ 'wpretail-unit ' ],
+				 'attr'              => [
+					 'action' => admin_url(),
+					 'method' => 'post',
+				 ],
+				 'form_title'        => __( 'Add Unit', 'wpretail' ),
+				 'form_submit_id'    => 'wpretail_add_brand',
+				 'form_submit_label' => __( 'Add Unit', 'wpretail' ),
+				 'is_modal'          => true,
+				 'modal'             => 'modal-md modal-dialog-centered modal-dialog-scrollable',
+			 ],
+			 'input_args' => $settings,
+		 ];
+
+			wpretail()->builder->form( $args );
 	}
 
 	/**
@@ -886,14 +1083,52 @@ class WPRetail_Products {
 				'col'   => 'col-md-6',
 			],
 		];
+		$unit     = [
+			'unit_name'          => [
+				'label' => [
+					'content' => __( ' Unit Name ' ) . '*',
+				],
+				'input' => [
+					'type' => 'text',
+					'name' => 'unit_name',
+					'id'   => 'unit_name',
+				],
+				'col'   => 'col-md-12',
+			],
+			'unit_short_name'    => [
+				'label' => [
+					'content' => __( 'Short Name ' ),
+				],
+				'input' => [
+					'type' => 'text',
+					'name' => 'unit_short_name',
+					'id'   => 'unit_short_name',
+				],
+				'col'   => 'col-md-12',
+			],
+			'unit_allow_decimal' => [
+				'input' => [
+					'type'    => 'select',
+					'name'    => 'unit_allow_decimal',
+					'class'   => [ 'mt-2' ],
+					'id'      => 'unit_allow_decimal',
+					'options' => [
+						'yes' => 'Yes',
+						'no'  => 'No',
+					],
+				],
+				'col'   => 'col-md-12',
+			],
+		];
 		return array_filter(
 			array_merge(
 				$field_options,
 				[
 					'add_product' => $add_product,
 					'category'    => $category,
-					'brand'       => $brand,
+					'brand'       => $unit,
 					'warranty'    => $warranty,
+					'unit'        => $unit,
 				]
 			)
 		);
@@ -930,6 +1165,10 @@ class WPRetail_Products {
 					'warranty'    => [
 						'name' => 'Warranties',
 						'slug' => 'warranty',
+					],
+					'unit'        => [
+						'name' => 'Units',
+						'slug' => 'unit',
 					],
 				]
 			)

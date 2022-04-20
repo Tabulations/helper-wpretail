@@ -142,6 +142,31 @@ class WPRetail_Db {
 		return (array) $category;
 	}
 
+			/**
+		 * Unit Data.
+		 *
+		 * @param mixed $args Args.
+		 * @param mixed $where Args.
+		 * @return int ID.
+		 */
+		public function get_unit( $id = null ) {
+			if ( ! empty( $id ) ) {
+				$unit = $this->db->get_row(
+					$this->db->prepare(
+						"SELECT * FROM {$this->db->prefix}wpretail_units
+							WHERE `id` = %s",
+						$id
+					)
+				);
+			} else {
+				$unit = $this->db->get_results(
+					"SELECT * FROM {$this->db->prefix}wpretail_units
+						WHERE status= TRUE"
+				);
+			}
+			return (array) $unit;
+		}
+
 	/**
 	 * Get Business.
 	 *
