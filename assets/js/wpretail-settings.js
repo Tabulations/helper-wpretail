@@ -32,6 +32,11 @@ jQuery( function ( $ ) {
 					var formId = formTuple.attr( 'id' ),
 						data = formTuple.serializeArray();
 
+					var form = $('form')[0];
+					var formData = new FormData(form);
+					formData.append( 'action', 'wpretail_ajax_form_submission' );
+					formData.append( 'wpretail_nonce', wpretailSettingsParams.nonce );
+					formData.append( 'form_id', formId);
 					formTuple.attr( 'submit-text', btn.html() );
 
 					// Change the text to user defined property.
@@ -41,27 +46,16 @@ jQuery( function ( $ ) {
 							: 'Processing'
 					);
 
-					// Add action intend for ajax_form_submission endpoint.
-					data.push( {
-						name: 'action',
-						value: 'wpretail_ajax_form_submission',
-					} );
 
-					data.push( {
-						name: 'wpretail_nonce',
-						value: wpretailSettingsParams.nonce,
-					} );
-
-					data.push( {
-						name: 'form_id',
-						value: formId,
-					} );
 
 					// Fire the ajax request.
 					$.ajax( {
 						url: wpretailSettingsParams.ajax_url,
 						type: 'POST',
-						data: data,
+						data: formData,
+						cache      : false,
+						contentType: false,
+						processData: false,
 					} )
 						.done( function ( xhr, textStatus, errorThrown ) {
 							if ( true === xhr.success ) {

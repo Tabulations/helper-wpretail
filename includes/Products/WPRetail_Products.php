@@ -35,7 +35,7 @@ class WPRetail_Products {
 		add_action( 'wpretail_view_warranty', [ $this, 'view_warranty' ] );
 		add_action( 'wpretail_view_unit', [ $this, 'view_unit' ] );
 
-		// DB Handler.
+		// Brand Handler.
 		add_action( 'wpretail_brand_handler', [ $this, 'brand_handler' ] );
 		add_action( 'wpretail_list_brand_handler', [ $this, 'list_brand_handler' ] );
 
@@ -47,9 +47,102 @@ class WPRetail_Products {
 		add_action( 'wpretail_warranty_handler', [ $this, 'warranty_handler' ] );
 		add_action( 'wpretail_list_warranty_handler', [ $this, 'list_warranty_handler' ] );
 
-		// Warrenty Handler.
+		// Unit Handler.
 		add_action( 'wpretail_unit_handler', [ $this, 'unit_handler' ] );
 		add_action( 'wpretail_list_unit_handler', [ $this, 'list_unit_handler' ] );
+
+		// Unit Handler.
+		add_action( 'wpretail_product_handler', [ $this, 'product_handler' ] );
+	}
+
+	/**
+	 * Product handler.
+	 *
+	 * @param mixed $ajax Ajax.
+	 * @return void
+	 */
+	public function product_handler( $ajax ) {
+error_log(print_r($ajax,true));
+		$fields = [
+			'name'            => $ajax->sanitized_fields['product_name'],
+			'business_id'     => 1,
+			'type'            => 'single',
+			'brand_id'        => $ajax->sanitized_fields['brand_id'],
+			'category_id'     => $ajax->sanitized_fields['category_id'],
+			'sub_category_id' => $ajax->sanitized_fields['sub_category_id'],
+			'tax'             => 1,
+			'tax_type'        => 'inclusive',
+			'product_image'   => $ajax->sanitized_fields['product_image'],
+			'enable_stock'    => 1,
+			'alert_quantity'  => 2,
+			'sku'             => $ajax->sanitized_fields['sku'],
+			'barcode_type'    => $ajax->sanitized_fields['barcode_type'],
+			'status'          => 1,
+			'created_by'      => 1,
+		];
+		$db     = new WPRetail\Db\WPRetail_Db( 'wpretail_products' );
+
+		try {
+			if ( ! empty( $ajax->event['id'] ) ) {
+				$where = [ 'id' => $ajax->event['id'] ];
+				$id    = $db->update( $fields, $where );
+				if ( $id ) {
+					$ajax->success['message'] = 'Product updated successfully';
+					$ajax->success['id']      = $ajax->event['id'];
+					$formatted_fields         = [
+						'business_id'     => '1', // Always.
+						'status'          => '1', // Always.
+						'product_name'    => $fields['name'],
+						'type'            => 'single',
+						'brand_id'        => $fields['brand_id'],
+						'category_id'     => $fields['category_id'],
+						'sub_category_id' => $fields['sub_category_id'],
+						'tax'             => 'test',
+						'tax_type'        => 'inclusive',
+						'product_image'   => $fields['product_image'],
+						'enable_stock'    => 1,
+						'alert_quantity'  => 2,
+						'sku'             => $fields['sku'],
+						'barcode_type'    => $fields['barcode_type'],
+						'created_by'      => 1,
+					];
+					$ajax->success['updated'] = $formatted_fields;
+				} else {
+					$ajax->errors['message'] = 'Unit could not be updated';
+				}
+				return;
+			} else {
+				$id = $db->insert( $fields );
+
+				if ( $id ) {
+					$ajax->success['message']  = __( 'Product added successfully', 'wpretail' );
+					$ajax->success['id']       = $db->get_last_insert_id();
+					$formatted_fields          = [
+						'business_id'     => '1', // Always.
+						'status'          => '1', // Always.
+						'product_name'    => $fields['name'],
+						'type'            => 'single',
+						'brand_id'        => $fields['brand_id'],
+						'category_id'     => $fields['category_id'],
+						'sub_category_id' => $fields['sub_category_id'],
+						'tax'             => 'test',
+						'tax_type'        => 'inclusive',
+						'product_image'   => $fields['product_image'],
+						'enable_stock'    => 1,
+						'alert_quantity'  => 2,
+						'sku'             => $fields['sku'],
+						'barcode_type'    => $fields['barcode_type'],
+						'created_by'      => 1,
+					];
+					$ajax->success['inserted'] = $formatted_fields;
+				} else {
+					$ajax->errors['message'] = __( 'Product Could not be added', 'wpretail' );
+				}
+			}
+		} catch ( \Exception $e ) {
+			$ajax->errors['message'] = $e->getMessage();
+		}
+
 	}
 
 		/**
@@ -174,7 +267,6 @@ class WPRetail_Products {
 	 * @return void
 	 */
 	public function view_unit() {
-		error_log( 'hello', true );
 		$field_options = apply_filters( 'wpretail_form_fields_options', [] );
 		$settings      = $field_options['unit'];
 		$db            = new WPRetail\Db\WPRetail_Db( 'wpretail_units' );
@@ -395,7 +487,6 @@ class WPRetail_Products {
 							$db = new WPRetail\Db\WPRetail_Db( 'wpretail_categories' );
 							try {
 								$category = $db->get_category( $ajax->event['id'] );
-								error_log( print_r( $category, true ) );
 								$fields                    = [
 									'business_id'          => '1', // Always.
 									'category_name'        => $category['name'],
@@ -842,7 +933,7 @@ class WPRetail_Products {
 			[
 				'head'    => [
 					'labels' => [
-						'name'        => __( 'Product', 'wpretail' ),
+						'name' => __( 'Product', 'wpretail' ),
 					],
 					'data'   => [
 						'name' => 'product_name',
@@ -868,8 +959,9 @@ class WPRetail_Products {
 				'id'                => 'wpretail_product',
 				'class'             => [ 'wpretail-product' ],
 				'attr'              => [
-					'action' => admin_url(),
-					'method' => 'post',
+					'action'  => admin_url(),
+					'method'  => 'post',
+					'enctype' => 'multipart/form-data',
 				],
 				'form_title'        => __( 'Add Product', 'wpreatil' ),
 				'form_submit_id'    => 'wpretail_add_product',
@@ -890,9 +982,24 @@ class WPRetail_Products {
 	 * @return void
 	 */
 	public function form_fields_option( $field_options ) {
-		$brands   = [ 'apple', 'samsung', 'nokia', 'micromax', 'realme', 'redme' ];
-		$product  = [
-			'product_name' => [
+
+		// Brand Name.
+		$db         = new WPRetail\Db\WPRetail_Db( 'wpretail_brands' );
+		$brands     = $db->get_brand();
+		$brand_name = [];
+		foreach ( $brands as  $brand ) {
+			$brand_name[ $brand->id ] = $brand->name;
+		}
+
+		// Category Name
+		$db            = new WPRetail\Db\WPRetail_Db( 'wpretail_categories' );
+		$categories    = $db->get_category();
+		$category_name = [];
+		foreach ( $categories as  $category ) {
+			$category_name[ $category->id ] = $category->name;
+		}
+		$product = [
+			'product_name'               => [
 				'label' => [
 					'content' => __( 'Product Name' ) . '*',
 				],
@@ -903,7 +1010,7 @@ class WPRetail_Products {
 				],
 				'col'   => 'col-md-4',
 			],
-			'sku'          => [
+			'sku'                        => [
 				'label' => [
 					'content' => __( 'SKU' ),
 				],
@@ -914,7 +1021,7 @@ class WPRetail_Products {
 				],
 				'col'   => 'col-md-4',
 			],
-			'barcode_type' => [
+			'barcode_type'               => [
 				'label' => [
 					'content' => __( 'Barcode Type' ) . '*',
 				],
@@ -933,7 +1040,7 @@ class WPRetail_Products {
 				],
 				'col'   => 'col-md-4',
 			],
-			'brand_id'     => [
+			'brand_id'                   => [
 				'label' => [
 					'content' => __( 'Brand' ),
 				],
@@ -941,11 +1048,12 @@ class WPRetail_Products {
 					'type'    => 'select',
 					'name'    => 'brand_id',
 					'id'      => 'brand_id',
-					'options' => $brands,
+					'options' => $brand_name,
+					'has_key' => true,
 				],
 				'col'   => 'col-md-4',
 			],
-			'category_id'  => [
+			'category_id'                => [
 				'label' => [
 					'content' => __( 'Category' ),
 				],
@@ -953,13 +1061,74 @@ class WPRetail_Products {
 					'type'    => 'select',
 					'name'    => 'category_id',
 					'id'      => 'category_id',
+					'options' => $category_name,
+					'has_key' => true,
+				],
+				'col'   => 'col-md-4',
+			],
+			'sub_category_id'            => [
+				'label' => [
+					'content' => __( ' Sub Category' ),
+				],
+				'input' => [
+					'type'    => 'select',
+					'name'    => 'sub_category_id',
+					'id'      => 'sub_category_id',
+					'options' => $category_name,
+					'has_key' => true,
+				],
+				'col'   => 'col-md-4',
+			],
+			'product_description'        => [
+				'label' => [
+					'content' => __( 'Product Description' ),
+				],
+				'input' => [
+					'type' => 'textarea',
+					'name' => 'product_description',
+					'id'   => 'product_description',
+				],
+				'col'   => 'col-md-4',
+			],
+			'product_image'              => [
+				'label' => [
+					'content' => __( 'Product Image' ),
+				],
+				'input' => [
+					'type' => 'file',
+					'name' => 'product_image',
+					'id'   => 'product_image',
+				],
+				'col'   => 'col-md-4',
+			],
+			'enable_product_description' => [
+				'input' => [
+					'type'    => 'checkbox',
+					'name'    => 'enable_product_description',
+					'id'      => 'enable_product_description',
 					'options' => [
-						'1' => 'Accesories',
-						'2' => 'Electronics',
+						'items'   => [
+							'1' => __( 'Enable Product Description in Pos' ),
+						],
 					],
 				],
 				'col'   => 'col-md-4',
 			],
+			'not_for_selling'            => [
+				'input' => [
+					'type'    => 'checkbox',
+					'name'    => 'not_for_selling',
+					'id'      => 'not_for_selling',
+					'options' => [
+						'items'   => [
+							'1' => __( 'Not for selling' ),
+						],
+						'has_key' => true,
+					],
+				],
+				'col'   => 'col-md-4',
+			],
+
 		];
 		$category = [
 			'category_name' => [

@@ -265,4 +265,39 @@ class WPRetail_Helper_Functions {
 	public function decode( $obj ) {
 		return json_decode( $obj, true );
 	}
+
+/**
+	 * Handles the file upload request.
+	 */
+	function wpretail_handle_file_upload() {
+
+
+
+		$file_size = $_FILES['wpretail_product_product_image']['size'];
+		$allowed_file_size = 512000; // Here we are setting the file size limit to 500 KB = 500 × 1024
+
+		// Check for file size limit
+		if ( $file_size >= $allowed_file_size ) {
+			wp_die( sprintf( esc_html__( 'File size limit exceeded, file size should be smaller than %d KB', 'theme-text-domain' ), $allowed_file_size / 1000 ) );
+		}
+
+		// These files need to be included as dependencies when on the front end.
+		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+		// Let WordPress handle the upload.
+		// Remember, 'wpcfu_file' is the name of our file input in our form above.
+		// Here post_id is 0 because we are not going to attach the media to any post.
+		$attachment_id = media_handle_upload( 'wpcfu_file', 0 );
+
+		if ( is_wp_error( $attachment_id ) ) {
+			// There was an error uploading the image.
+			wp_die( $attachment_id->get_error_message() );
+		} else {
+			// We will redirect the user to the attachment page after uploading the file successfully.
+			wp_redirect( get_the_permalink( $attachment_id ) );
+			exit;
+		}
+	}
 }

@@ -66,7 +66,6 @@ abstract class WPRetail_Sanitizer {
 	 * @return $sanitized_fields Sanized fields.
 	 */
 	public function sanitized_data() {
-
 		if ( isset( $_POST['wpretail_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['wpretail_nonce'] ) ), 'wpretail_nonce' ) ) {
 
 			if ( isset( $_POST['id'] ) ) {
@@ -101,7 +100,7 @@ abstract class WPRetail_Sanitizer {
 					$this->validate( '', $field );
 					continue;
 				}
-				$field_name                            = $field['input']['name'];
+				$field_name = $field['input']['name'];
 				switch ( $field['input']['type'] ) {
 					case 'select':
 						if ( is_array( $_POST['wpretail'][ $this->target ][ $field_name ] ) ) {
@@ -124,6 +123,21 @@ abstract class WPRetail_Sanitizer {
 					case 'textarea':
 						if ( isset( $_POST['wpretail'][ $this->target ][ $field_name ] ) ) {
 							$this->sanitized_fields[ $field_name ] = sanitize_textarea_field( wp_unslash( $_POST['wpretail'][ $this->target ][ $field_name ] ) );
+						}
+						break;
+					case 'file':
+						if ( isset( $_FILES['wpretail']['name'][ $this->target ][ $field_name ] ) ) {
+							$this->sanitized_fields[ $field_name ] = $_FILES['wpretail']['name'][ $this->target ][ $field_name ];
+							$upload_dir                            = wp_upload_dir();
+							if ( ! empty( $upload_dir['basedir'] ) ) {
+								$user_dirname = $upload_dir['basedir'] . '/product-images';
+								if ( ! file_exists( $user_dirname ) ) {
+									wp_mkdir_p( $user_dirname );
+								}
+
+								$filename = wp_unique_filename( $user_dirname,$_FILES['wpretail']['name'][ $this->target ][ $field_name ] );
+								move_uploaded_file( $_FILES['wpretail']['tmp_name'][ $this->target ][ $field_name ], $user_dirname . '/' . 	$filename  );
+							}
 						}
 						break;
 					default:
